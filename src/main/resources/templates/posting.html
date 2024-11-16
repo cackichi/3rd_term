@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Добавление объявления</title>
+  <link rel="stylesheet" type="text/css" href="../static/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+<header th:insert="~{blocks/header :: header}" class="form-header"></header>
+<body>
+<div class="centered">
+  <div th:if="${errorOfSpaceInServices}" class="alert-danger">
+    <p th:text="${errorOfSpaceInServices}"></p>
+  </div>
+</div>
+<div class="container">
+  <div class="row-posting">
+    <div class="filter">
+      <form th:method="post" th:action="@{/posting}" th:object="${hotelRoomEntity}" enctype="multipart/form-data">
+        <fieldset>
+          <legend>Добавление объявления</legend>
+            <label for="title">Название номера:</label>
+            <input type="text" th:field="*{name}" id="title" name="title" required placeholder="Введите название номера (тип)">
+
+          <div th:each="service : ${services}">
+            <input type="checkbox" th:field="*{services}" th:value="${service.id}"/>
+            <span th:text="${service.name}"></span>
+          </div>
+
+            <label for="price">Цена за день (в $):</label>
+            <input type="number" th:field="*{pricePerDay}" id="price" name="price" required placeholder="Введите цену">
+
+            <label for="amountOfSleepers">Количество спальных мест:</label>
+            <input type="number" th:field="*{amountOfSleepers}" id="amountOfSleepers" name="amountOfSleepers" min="1" max="4" required placeholder="Введите количество спальных мест">
+
+            <label for="images">Изображение:</label>
+            <input type="file" id="images" name="images" accept="image/*" multiple required>
+
+            <label for="description">Описание:</label>
+            <textarea th:field="*{description}" id="description" name="description" required placeholder="Введите описание номера" maxlength="250"></textarea>
+
+        </fieldset>
+          <button type="submit" class="sign-btn">Добавить объявление</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+<div>
+
+</div>
+<footer th:insert="~{blocks/footer :: footer}" class="form-footer"></footer>
+</html>

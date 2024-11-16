@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotel</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header th:insert="~{blocks/header :: header}"></header>
+<div class="centered">
+    <div th:if="${errorOfSpaceInServices}" class="alert alert-danger">
+        <p th:text="${errorOfSpaceInServices}"></p>
+    </div>
+    <div th:if="${photoError}" class="alert alert-danger">
+        <p th:text="${photoError}"></p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="filter">
+            <form th:method="patch" th:action="@{/edit-room-post}" th:object="${room}" enctype="multipart/form-data">
+                <fieldset>
+                    <legend>Редактирование объявления</legend>
+                        <label for="title">Название номера:</label>
+                        <input type="text" th:field="*{name}" id="title" name="title" class="form-control large-input" required placeholder="Введите название номера">
+
+                    <div th:each="service : ${services}">
+                        <input type="checkbox"  th:field="*{services}" th:value="${service.id}" checked/>
+                        <span th:text="${service.name}"></span>
+                    </div>
+
+                        <label for="price">Цена за день (в $):</label>
+                        <input type="number" th:field="*{pricePerDay}" id="price" name="price" class="form-control large-input" required placeholder="Введите цену">
+
+                        <label for="amountOfSleepers">Количество спальных мест:</label>
+                        <input type="number" th:field="*{amountOfSleepers}" id="amountOfSleepers" name="amountOfSleepers" class="form-control large-input" required max="4" min="1" placeholder="Укажите количество мест">
+
+                        <label for="description">Описание:</label>
+                        <textarea th:field="*{description}" id="description" name="description" class="form-control" required placeholder="Введите описание номера" maxlength="250"></textarea>
+
+                        <label for="images">Изображение:</label>
+                        <input type="file" id="images" name="images" accept="image/*" multiple>
+                </fieldset>
+                    <input type="hidden" name="roomIdForEdit" th:value="${room.id}">
+                    <button type="submit" class="sign-btn save-changes">Сохранить изменения</button>
+            </form>
+                <ul th:if="${not photos.isEmpty()}" th:each="photo : ${photos}" class="centered">
+                    <img th:src="@{'/photos/' + ${photo}}" alt="Изображение номера" width="150" height="150" cache="false">
+                    <form th:method="delete" th:action="@{/delete-photo}">
+                        <input type="hidden" name="photoToDelete" th:value="${photo}">
+                        <input type="hidden" name="roomId" th:value="${room.id}">
+                        <button type="submit" class="default-btn">Удалить фото</button>
+                    </form>
+                </ul>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{blocks/footer :: footer}"></footer>
+</body>
+</html>
