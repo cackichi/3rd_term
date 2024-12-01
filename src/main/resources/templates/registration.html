@@ -22,13 +22,13 @@
             <h1>Регистрация</h1>
 
             <div class="form-floating">
-                <input type="text" th:field="*{login}" id="login" placeholder="Логин" minlength="5" maxlength="20">
+                <input type="text" th:field="*{login}" id="login" name="login" placeholder="Логин" minlength="5" maxlength="20">
             </div>
             <div class="form-floating">
-                <input type="email" th:field="*{email}" id="email" placeholder="Почта">
+                <input type="email" th:field="*{email}" id="email" name="email" placeholder="Почта">
             </div>
             <div class="form-floating">
-                <input type="password" th:field="*{password}"id="password" placeholder="Пароль" minlength="5" maxlength="20">
+                <input type="password" th:field="*{password}"id="password" name="password" placeholder="Пароль" minlength="5" maxlength="20">
             </div>
             <div class="form-floating">
                 <input type="password" id="repeatPassword" name="repeatPassword" placeholder="Повторение пароля" minlength="5" maxlength="20">
@@ -38,6 +38,6 @@
         </form>
     </main>
 </section>
-<footer th:insert="~{blocks/footer :: footer}"></footer>
+<footer class="footer" th:insert="~{blocks/footer :: footer}"></footer>
 </body>
 </html>

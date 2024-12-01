@@ -21,47 +21,45 @@
       </select>
     </form>
     <h2 class="admin search-result">Результат поиска</h2>
-    <ul class="room-list" id="roomList">
-      <li th:each="room, indx : ${result.content}" th:data-byPrice="${room.pricePerDay}" th:data-bySleepers="${room.amountOfSleepers}" th:data-byAlphabet="${room.name}">
-        <a th:href="@{'/post?roomId=' + ${room.id}}" class="room-link">
-          <div class="room-search room">
-            <img th:src="@{'/photos/' + ${room.photos.get(0)} + '?rand=' + ${randomValue}}" alt="Изображение номера" width="150" height="150">
+    <section class="room-list-section" th:if="${not result.isEmpty()}">
+      <h2>Список номеров</h2>
+      <div class="room-list" style="margin: 0 50px 0 50px">
+        <div class="room-card" th:each="room, indx : ${result.content}">
+          <a th:href="@{'/post?roomId=' + ${room.id}}" class="room-link">
+            <img th:src="@{'/photos/' + ${room.photos.get(0)}}" alt="Изображение номера" class="room-image">
             <div class="room-details">
-              <h2>
-                Название номера:
-                <span th:text="${room.name + ' ' + averageRatings[indx.index]}"></span>
-                <span>&#9733;</span>
-              </h2>
+              <h3>
+                <span th:text="${room.name}"></span>
+                <span class="rating" th:text="${averageRatings[indx.index]} + ' ★'"></span>
+              </h3>
               <p>Спальных мест: <span th:text="${room.amountOfSleepers}"></span></p>
-              <p>Услуги:
-              <ul>
-                <li class="services" th:each="service : ${room.services}">
-                  <span th:text="${service}"></span>
-                </li>
-              </ul>
-              </p>
-              <p>Цена за день: <span th:text="${room.pricePerDay} + '$'"></span></p>
+              <div class="services">
+                <p>Услуги:</p>
+                <ul class="services-list">
+                  <li th:each="service : ${room.services}" th:text="${service}"></li>
+                </ul>
+              </div>
+              <p class="price">Цена за день: <span th:text="${room.pricePerDay} + '$'"></span></p>
             </div>
-          </div>
-        </a>
-      </li>
-    </ul>
-
-    <div th:if="${result.totalPages > 1}">
-      <ul class="pagination">
-        <li th:class="${result.number == 0} ? 'disabled'">
-          <a th:if="${result.number != 0}" th:href="@{'/search?page=' + ${result.number - 1}}">
-            <span class="arrow-circle">&laquo;</span>
           </a>
-        </li>
+        </div>
+      </div>
 
-        <li th:class="${result.number == 0} ? 'disabled'">
-          <a th:if="${result.number != result.totalPages - 1}" th:href="@{'/search?page=' + ${result.number + 1}}">
-            <span class="arrow-circle">&raquo;</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+      <div class="pagination" th:if="${result.totalPages > 1}">
+        <a th:if="${result.number != 0}"
+           th:href="@{'/?page=' + ${result.number - 1}}"
+           class="page-link">&laquo;</a>
+
+        <a th:each="pageNum : ${#numbers.sequence(0, result.totalPages - 1)}"
+           th:href="@{'/?page=' + ${pageNum}}"
+           th:text="${pageNum + 1}"
+           th:class="${pageNum == result.number} ? 'page-link active' : 'page-link'"></a>
+
+        <a th:if="${result.number != result.totalPages - 1}"
+           th:href="@{'/?page=' + ${result.number + 1}}"
+           class="page-link">&raquo;</a>
+      </div>
+    </section>
   </div>
   <div class="search-container">
     <div th:if="${isEmpty}" class="empty-search">
@@ -73,7 +71,7 @@
   </div>
 </div>
 </body>
-<footer th:insert="~{blocks/footer :: footer}"></footer>
+<footer class="footer" th:insert="~{blocks/footer :: footer}"></footer>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var sortByParam = new URLSearchParams(window.location.search).get('sortBy');

@@ -83,6 +83,8 @@ public class MainController {
     @GetMapping("/about-us")
     public String aboutUs(Model model) {
         userService.addUserInfo(model);
+        model.addAttribute("latitude", 53.908211385796726);
+        model.addAttribute("longitude", 27.54809847645955);
         return "about";
     }
 }

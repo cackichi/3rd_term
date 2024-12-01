@@ -52,7 +52,6 @@
             <th>ID</th>
             <th>Название номера</th>
             <th>Ссылка на номер</th>
-            <th>ID создателя</th>
             <th>Удаление</th>
             <th>Редактирование</th>
         </tr>
@@ -62,7 +61,6 @@
             <td th:text="${room.id}">1</td>
             <td th:text="${room.name}">name</td>
             <td><a th:href="@{'/post?roomId=' + ${room.id}}">Ссылка</a></td>
-            <td th:text="${room.userEntity.id}"></td>
             <td>
                 <form th:action="@{/admin/delete-room}" th:method="delete">
                     <input type="hidden" name="roomIdForDelete" th:value="${room.id}">
@@ -109,7 +107,7 @@
         </tbody>
     </table>
     <h2 class="admin">Список всех существующих отзывов:</h2>
-    <table class="table">
+    <table class="table" style="margin-bottom: 1rem;">
         <thead>
         <tr>
             <th>ID отзыва</th>
@@ -142,6 +140,6 @@
     </table>
 </section>
 
-<footer th:insert="~{blocks/footer :: footer}"></footer>
+<footer class="footer" th:insert="~{blocks/footer :: footer}"></footer>
 </body>
 </html>

@@ -10,7 +10,6 @@ import java.util.Set;
 @Entity
 @Data
 @AllArgsConstructor
-@ToString(exclude = {"rooms"})
 @NoArgsConstructor
 @Table(name = "services")
 public class Service {
@@ -20,6 +19,11 @@ public class Service {
     private String name;
     @ManyToMany(mappedBy = "services")
     private Set<HotelRoomEntity> rooms = new HashSet<>();
+
+    @Override
+    public String toString() {
+        return name;
+    }
 
     @Override
     public boolean equals(Object o) {

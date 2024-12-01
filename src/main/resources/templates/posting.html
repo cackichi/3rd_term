@@ -12,7 +12,7 @@
     <p th:text="${errorOfSpaceInServices}"></p>
   </div>
 </div>
-<div class="container">
+<div class="container" style="display:flex; width:100%; justify-content: center;">
   <div class="row-posting">
     <div class="filter">
       <form th:method="post" th:action="@{/posting}" th:object="${hotelRoomEntity}" enctype="multipart/form-data">
@@ -21,6 +21,7 @@
             <label for="title">Название номера:</label>
             <input type="text" th:field="*{name}" id="title" name="title" required placeholder="Введите название номера (тип)">
 
+          <label>Выберите услуги:</label>
           <div th:each="service : ${services}">
             <input type="checkbox" th:field="*{services}" th:value="${service.id}"/>
             <span th:text="${service.name}"></span>
@@ -48,5 +49,5 @@
 <div>
 
 </div>
-<footer th:insert="~{blocks/footer :: footer}" class="form-footer"></footer>
+<footer class="footer form-footer" th:insert="~{blocks/footer :: footer}"></footer>
 </html>

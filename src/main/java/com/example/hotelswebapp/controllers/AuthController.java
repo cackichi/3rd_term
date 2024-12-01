@@ -46,7 +46,6 @@ public class AuthController {
     @PostMapping("/reg")
     public String reg(@ModelAttribute("userEntity") UserEntity userEntity, HttpServletRequest request, Model model) {
         userService.addUserInfo(model);
-
         String repeatPassword = request.getParameter("repeatPassword");
         if (!userEntity.getPassword().equals(repeatPassword)) {
             model.addAttribute("errorOfRepeatPassword", "Пароли не совпадают");
