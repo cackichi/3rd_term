@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -32,11 +33,15 @@ public class HotelRoomService {
         return hotelRoomRepo.findById(id);
     }
 
+    private String generateUniqueFileName(String originalFileName) {
+        return UUID.randomUUID().toString() + "_" + originalFileName;
+    }
+
     public List<String> uploadPhoto(MultipartFile[] files, List<String> photos) {
         for (MultipartFile file : files) {
             if (!file.isEmpty()) {
                 try {
-                    String fileName = file.getOriginalFilename();
+                    String fileName = generateUniqueFileName(file.getOriginalFilename());
                     File uploadFile = new File(PHOTOS_PATH + "\\" + fileName);
                     file.transferTo(uploadFile);
                     photos.add(fileName);
@@ -59,12 +64,6 @@ public class HotelRoomService {
             fullPrice += hotelRoomEntity.getPricePerDay() * numOfDays;
         }
         return fullPrice;
-    }
-
-    public Page<HotelRoomEntity> searchRooms(String roomName,Integer minPrice,Integer maxPrice,
-                                             Integer amountOfSleepers,LocalDate checkInDate,LocalDate checkOutDate,
-                                             Pageable pageable){
-        return hotelRoomRepo.searchRooms(roomName,minPrice,maxPrice,amountOfSleepers,checkInDate,checkOutDate,pageable);
     }
 
     @Transactional

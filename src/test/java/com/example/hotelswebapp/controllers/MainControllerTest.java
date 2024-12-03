@@ -20,6 +20,7 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,9 +45,33 @@ public class MainControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(mainController).setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
                 .build();
 
-        List<HotelRoomEntity> rooms = Arrays.asList(
-                new HotelRoomEntity(), new HotelRoomEntity()
-        );
+        List<HotelRoomEntity> rooms = new ArrayList<>();
+
+        HotelRoomEntity room1 = new HotelRoomEntity();
+        room1.setId(1);
+        room1.setName("Deluxe Room");
+        room1.setAmountOfSleepers(2);
+        room1.setPricePerDay(150);
+        room1.setPhotos(Arrays.asList("photo1.jpg", "photo2.jpg"));
+
+        HotelRoomEntity room2 = new HotelRoomEntity();
+        room2.setId(2);
+        room2.setName("Standard Room");
+        room2.setAmountOfSleepers(1);
+        room2.setPricePerDay(120);
+        room2.setPhotos(Arrays.asList("photo3.jpg", "photo4.jpg"));
+
+        HotelRoomEntity room3 = new HotelRoomEntity();
+        room3.setId(3);
+        room3.setName("Suite Room");
+        room3.setAmountOfSleepers(3);
+        room3.setPricePerDay(200);
+        room3.setPhotos(Arrays.asList("photo5.jpg", "photo6.jpg"));
+
+        rooms.add(room1);
+        rooms.add(room2);
+        rooms.add(room3);
+
         Page<HotelRoomEntity> page = new PageImpl<>(rooms, PageRequest.of(0, 3), 1);
 
         when(hotelRoomService.pageOfRooms(any(Pageable.class))).thenReturn(page);
@@ -63,6 +88,8 @@ public class MainControllerTest {
                 .andExpect(model().attributeExists("averageRatings"));
         verify(hotelRoomService).pageOfRooms(any(Pageable.class));
         verify(reviewOfRoomService).getAverageOfAllRooms(any());
+
+        System.out.println("Main page test completed successfully.");
     }
 
     @Test
@@ -76,6 +103,8 @@ public class MainControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("main"))
                 .andExpect(model().attributeExists("rooms"));
+
+        System.out.println("Main page pagination test completed successfully.");
     }
 
     @Test
@@ -90,6 +119,8 @@ public class MainControllerTest {
                         .param("sortBy", "byPrice"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("search_results"));
+
+        System.out.println("Search with parameters test completed successfully.");
     }
 
 }

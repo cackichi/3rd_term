@@ -3,10 +3,7 @@ package com.example.hotelswebapp.controllers;
 import com.example.hotelswebapp.entity.HotelRoomEntity;
 import com.example.hotelswebapp.entity.ReviewOfRoom;
 import com.example.hotelswebapp.entity.UserEntity;
-import com.example.hotelswebapp.services.HotelRoomService;
-import com.example.hotelswebapp.services.ReservationService;
-import com.example.hotelswebapp.services.ReviewOfRoomService;
-import com.example.hotelswebapp.services.UserService;
+import com.example.hotelswebapp.services.*;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +22,7 @@ public class ProfileController {
     private final ReservationService reservationService;
     private final UserService userService;
     private final ReviewOfRoomService reviewOfRoomService;
+    private final ServiceOfServices serviceOfServices;
 
     @GetMapping("/profile")
     public String showProfile(Model model) {
@@ -39,13 +37,13 @@ public class ProfileController {
         return "profile";
     }
 
-    @DeleteMapping("/delete-room")
+    @PostMapping("/delete-room")
     public String deleteRoomByUser(@RequestParam("roomIdForDelete") int id) {
         hotelRoomService.deleteRoomById(id);
         return "redirect:/profile";
     }
 
-    @DeleteMapping("/delete-photo")
+    @PostMapping("/delete-photo")
     public String deletePhoto(@RequestParam("roomId") int id,
                                @RequestParam("photoToDelete") String photo,
                                RedirectAttributes redirectAttributes){
@@ -58,19 +56,19 @@ public class ProfileController {
         return "redirect:/edit-room";
     }
 
-    @DeleteMapping("/delete-reservation")
+    @PostMapping("/delete-reservation")
     public String deleteReservationUser(@RequestParam("reservationIdForDelete") int id) {
         reservationService.delete(id);
         return "redirect:/profile";
     }
 
-    @DeleteMapping("/delete-review")
+    @PostMapping("/delete-review")
     public String deleteReview(@RequestParam("reviewIdToDelete") int id){
         reviewOfRoomService.deleteReview(id);
         return "redirect:/profile";
     }
 
-    @PatchMapping("/edit-review")
+    @PostMapping("/edit-review")
     public String editReview(@RequestParam("reviewIdForEdit") int id,
                              @RequestParam("changedRatingOfReview") double rating,
                              @RequestParam("changedTextOfReview") String text){
@@ -86,6 +84,7 @@ public class ProfileController {
                 userService.addUserInfo(model);
         HotelRoomEntity hotelRoomEntity = hotelRoomService.findRoomById(id);
 
+        model.addAttribute("allServices", serviceOfServices.findAll());
         model.addAttribute("photos", hotelRoomEntity.getPhotos());
         model.addAttribute("services", hotelRoomEntity.getServices());
         model.addAttribute("room", hotelRoomEntity);
@@ -93,7 +92,7 @@ public class ProfileController {
 
     }
 
-    @PatchMapping("/edit-room-post")
+    @PostMapping("/edit-room-post")
     public String editRoomPost(@ModelAttribute("room") HotelRoomEntity room,
                                @RequestParam(name = "images", required = false) MultipartFile[] files,
                                @RequestParam("roomIdForEdit") int id,

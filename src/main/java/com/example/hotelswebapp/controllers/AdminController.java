@@ -37,31 +37,31 @@ public class AdminController {
         return "admin";
     }
 
-    @DeleteMapping("/admin/delete-user")
+    @PostMapping("/admin/delete-user")
     public String deleteUser(@RequestParam("userIdForDelete") int id) {
         userService.deleteUser(id);
         return "redirect:/admin";
     }
 
-    @DeleteMapping("/admin/delete-room")
+    @PostMapping("/admin/delete-room")
     public String deleteRoomByAdmin(@RequestParam("roomIdForDelete") int id) {
         hotelRoomService.deleteRoomById(id);
         return "redirect:/admin";
     }
 
-    @DeleteMapping("/admin/delete-reservation")
+    @PostMapping("/admin/delete-reservation")
     public String deleteReservationAdmin(@RequestParam("reservationIdForDelete") int id) {
         reservationService.delete(id);
         return "redirect:/admin";
     }
 
-    @PatchMapping("/admin/update-role")
+    @PostMapping("/admin/update-role")
     public String updateRole(@RequestParam("userIdForRole") int userId, @RequestParam("newRole") String newRole) {
         userService.updateRole(userId, newRole);
         return "redirect:/admin";
     }
 
-    @DeleteMapping("/delete-review-admin")
+    @PostMapping("/delete-review-admin")
     public String deleteReview(@RequestParam("reviewIdToDelete") int id){
         reviewOfRoomService.deleteReview(id);
         return "redirect:/admin";

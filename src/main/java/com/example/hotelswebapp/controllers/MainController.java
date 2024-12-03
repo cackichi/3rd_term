@@ -1,10 +1,12 @@
 package com.example.hotelswebapp.controllers;
 
 import com.example.hotelswebapp.entity.HotelRoomEntity;
+import com.example.hotelswebapp.entity.Reservation;
 import com.example.hotelswebapp.services.HotelRoomService;
 import com.example.hotelswebapp.services.ReviewOfRoomService;
 import com.example.hotelswebapp.services.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
@@ -14,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Controller
+@Slf4j
 @AllArgsConstructor
 public class MainController {
     private final UserService userService;
@@ -36,6 +41,7 @@ public class MainController {
         return "main";
     }
 
+
     @GetMapping("/search")
     public String search(Model model, @PageableDefault Pageable pageable,
                          @RequestParam(name = "page", required = false, defaultValue = "0") int page,
@@ -46,7 +52,9 @@ public class MainController {
                          @RequestParam(name = "minPrice", required = false, defaultValue = "0") int minPrice,
                          @RequestParam(name = "maxPrice", required = false, defaultValue = "0") int maxPrice,
                          @RequestParam(name = "sortBy", defaultValue = "default") String sortBy,
-                         RedirectAttributes redirectAttributes) {
+                         RedirectAttributes redirectAttributes
+    ) {
+        log.warn("Минималка - {}",minPrice);
         userService.addUserInfo(model);
         if (checkInDate != null && checkOutDate != null) {
             if (checkOutDate.isBefore(checkInDate) || checkOutDate.equals(checkInDate)) {
@@ -70,10 +78,39 @@ public class MainController {
             default -> Sort.unsorted();
         };
         pageable = PageRequest.of(page, pageable.getPageSize(), sort);
+        Page<HotelRoomEntity> rooms = hotelRoomService.pageOfRooms(pageable);
+        List<HotelRoomEntity> searchResultList = new ArrayList<>();
+        for (HotelRoomEntity room : rooms) {
+            boolean flag = true;
+            if (!roomName.equals(" ")) {
+                if (!room.getName().equalsIgnoreCase(roomName.trim())) {
+                    continue;
+                }
+            }
+            if (minPrice != 0 && maxPrice != 0) {
+                if (room.getPricePerDay() < minPrice || room.getPricePerDay() > maxPrice) {
+                    continue;
+                }
+            }
 
-        Page<HotelRoomEntity> result = hotelRoomService.searchRooms(
-                roomName, minPrice, maxPrice, amountOfSleepers, checkInDate, checkOutDate, pageable);
+            if (room.getAmountOfSleepers() < amountOfSleepers) {
+                continue;
+            }
 
+            if (checkInDate != null && checkOutDate != null) {
+                for (Reservation reservation : room.getReservations()) {
+                    if (!((checkInDate.isBefore(reservation.getDateOfReservation()) && checkOutDate.isBefore(reservation.getDateOfReservation())) ||
+                            (checkInDate.isAfter(reservation.getDateOfEviction()) && checkOutDate.isAfter(reservation.getDateOfEviction())))) {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+            if (flag) {
+                searchResultList.add(room);
+            }
+        }
+        Page<HotelRoomEntity> result = new PageImpl<>(searchResultList);
         model.addAttribute("averageRatings", reviewOfRoomService.getAverageOfAllRooms(result));
         model.addAttribute("isEmpty", result.getContent().isEmpty());
         model.addAttribute("result", result);

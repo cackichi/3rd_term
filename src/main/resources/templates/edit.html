@@ -16,17 +16,17 @@
     </div>
 </div>
 
-<div class="container">
-    <div class="row">
+<div class="container" style="display:flex; width:100%; justify-content: center;">
+    <div class="row-posting">
         <div class="filter">
-            <form th:method="patch" th:action="@{/edit-room-post}" th:object="${room}" enctype="multipart/form-data">
+            <form th:method="post" th:action="@{/edit-room-post}" th:object="${room}" enctype="multipart/form-data">
                 <fieldset>
                     <legend>Редактирование объявления</legend>
                         <label for="title">Название номера:</label>
                         <input type="text" th:field="*{name}" id="title" name="title" class="form-control large-input" required placeholder="Введите название номера">
 
-                    <div th:each="service : ${services}">
-                        <input type="checkbox"  th:field="*{services}" th:value="${service.id}" checked/>
+                    <div th:each="service : ${allServices}">
+                        <input type="checkbox"  th:field="*{services}" th:value="${service.id}" th:checked="${services.contains(service)}"/>
                         <span th:text="${service.name}"></span>
                     </div>
 
@@ -47,7 +47,7 @@
             </form>
                 <ul th:if="${not photos.isEmpty()}" th:each="photo : ${photos}" class="centered">
                     <img th:src="@{'/photos/' + ${photo}}" alt="Изображение номера" width="150" height="150" cache="false">
-                    <form th:method="delete" th:action="@{/delete-photo}">
+                    <form th:method="post" th:action="@{/delete-photo}" method="post">
                         <input type="hidden" name="photoToDelete" th:value="${photo}">
                         <input type="hidden" name="roomId" th:value="${room.id}">
                         <button type="submit" class="default-btn">Удалить фото</button>
